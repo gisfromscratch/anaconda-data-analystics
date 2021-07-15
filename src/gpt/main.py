@@ -20,11 +20,13 @@ class TextGenerator(object):
         print('Tokenize text done.')
 
         print('Generate text...')
-        gen_tokens = self._model.generate(input_ids, do_sample=True, temperature=0.9, max_length=1000)
+        gen_tokens = self._model.generate(input_ids, do_sample=True, temperature=0.9, max_length=256)
         print('Generate text done.')
         print('Decode text...')
         gen_text = self._tokenizer.batch_decode(gen_tokens)[0]
         print('Decode text done.')
+        if -1 != gen_text.find('<|endoftext|>'):
+            gen_text = gen_text.split('<|endoftext|>', 1)[0]
         return ' '.join(gen_text.split())
 
     def validate(self, text):
