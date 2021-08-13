@@ -1,5 +1,8 @@
+import io
+import random
 import spacy
 from transformers import GPTNeoForCausalLM, GPT2Tokenizer
+import uuid
 
 class TextGenerator(object):
 
@@ -20,7 +23,13 @@ class TextGenerator(object):
         print('Tokenize text done.')
 
         print('Generate text...')
-        gen_tokens = self._model.generate(input_ids, do_sample=True, temperature=0.9, max_length=256)
+        default_length = 256
+        input_length = input_ids.shape[1]
+        if 1.25*input_length < default_length:
+            max_length = default_length
+        else:
+            max_length = random.randint(int(1.25*input_length), int(1.5*input_length))
+        gen_tokens = self._model.generate(input_ids, do_sample=True, temperature=0.9, max_length=max_length)
         print('Generate text done.')
         print('Decode text...')
         gen_text = self._tokenizer.batch_decode(gen_tokens)[0]
@@ -66,9 +75,7 @@ class TextBuilder(object):
 
     def pop_last_sentences(self):
         if len(self._sentences) < 4:
-            text = self.to_text(self._sentences[1:])
-            self._sentences = self._sentences[:1]
-            return text
+            return self.pop_last_sentence()
 
         text = self.to_text(self._sentences[-3:])
         self._sentences = self._sentences[:-3]
@@ -83,6 +90,11 @@ class TextBuilder(object):
         if None is sentences:
             sentences = self._sentences
         return ' '.join([str(sentence) for sentence in sentences])
+
+    def to_ptext(self, sentences=None):
+        if None is sentences:
+            sentences = self._sentences
+        return '\n'.join([str(sentence) for sentence in sentences])
 
 
 
@@ -121,3 +133,9 @@ if __name__ == '__main__':
     print()
     print(builder.to_text())
     print()
+
+    new_uuid = str(uuid.uuid4()).replace('-', '')
+    out_file = '/tmp/generated_{0}.txt'.format(new_uuid)
+    with io.open(out_file, 'w', encoding='utf8') as out_stream:
+            out_stream.writelines(builder.to_ptext())
+    print(out_file)
