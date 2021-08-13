@@ -4,9 +4,19 @@ import QtQuick.Controls 2.12
 Flickable {
     id: flickable
 
-    property string text: "..."
+    property string richText
+
+    function appendText(newText) {
+        flickable.richText += "<br/>"
+        flickable.richText += newText
+    }
+
+    function getPlainText() {
+        return textArea.getText(0, textArea.length);
+    }
 
     TextArea.flickable: TextArea {
+        id: textArea
         textFormat: Qt.RichText
         wrapMode: TextArea.Wrap
         focus: true
@@ -21,7 +31,13 @@ Flickable {
         bottomPadding: 10
         //background: null
 
-        text: flickable.text
+        text: flickable.richText
+
+        Binding {
+            target: flickable
+            property: "richText"
+            value: textArea.text
+        }
 
         MouseArea {
             acceptedButtons: Qt.RightButton

@@ -5,7 +5,8 @@ from transformers import pipeline
 app = flask.Flask('GPT-Generator')
 app.config['DEBUG'] = True
 
-text_generator = pipeline('text-generation', model='EleutherAI/gpt-neo-1.8B')
+#text_generator = pipeline('text-generation', model='EleutherAI/gpt-neo-1.3B')
+text_generator = pipeline('text-generation', model='EleutherAI/gpt-neo-125M')
 
 @app.route('/generate', methods=['GET'])
 def generate_text():
@@ -14,6 +15,7 @@ def generate_text():
     else:
         return "Error: No prefix provided. Please specify a prefix."
 
+    print(prefix)
     gen_result = text_generator(prefix, do_sample=True, min_length=75, max_length=175)[0]
     return gen_result['generated_text']
 

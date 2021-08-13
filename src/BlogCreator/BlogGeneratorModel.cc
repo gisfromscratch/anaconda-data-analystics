@@ -13,14 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Additional permission under GNU GPL version 3 section 7
-//
-// If you modify this Program, or any covered work, by linking or combining
-// it with ArcGIS Runtime for Qt (or a modified version of that library),
-// containing parts covered by the terms of ArcGIS Runtime for Qt,
-// the licensors of this Program grant you additional permission to convey the resulting work.
-// See <https://developers.arcgis.com/qt/> for further information.
-//
 #include "BlogGeneratorModel.h"
 
 #include <QNetworkReply>
@@ -34,10 +26,10 @@ BlogGeneratorModel::BlogGeneratorModel(QObject *parent) : QObject(parent), m_acc
 
 void BlogGeneratorModel::generateText(const QString &prefix)
 {
-    QUrl url(QString("http://127.0.0.1:5000/prefix=%1").arg(prefix));
+    QUrl url(QString("http://127.0.0.1:5000/generate?prefix=%1").arg(prefix));
     QNetworkRequest textRequest(url);
     QNetworkReply *textReply = m_accessManager->get(textRequest);
-    connect(textReply, &QNetworkReply::finished, [this, textReply]()
+    connect(textReply, &QNetworkReply::finished, textReply, [this, textReply]()
     {
         switch (textReply->error())
         {

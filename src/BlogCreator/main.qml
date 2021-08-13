@@ -22,7 +22,8 @@ ApplicationWindow {
         id: genModel
 
         onTextGenerationFinished: {
-            outputTextArea.text = newText
+            outputTextArea.appendText(newText)
+            inputTextArea.richText = ""
         }
     }
 
@@ -34,7 +35,7 @@ ApplicationWindow {
             ToolButton {
                 text: qsTr("Generate...")
                 onClicked: {
-                    genModel.generateText(inputTextArea.text);
+                    genModel.generateText(inputTextArea.getPlainText());
                 }
             }
         }
@@ -48,7 +49,6 @@ ApplicationWindow {
             id: inputTextArea
             Layout.fillHeight: parent
             Layout.fillWidth: parent
-            text: "Geospatial Intelligence is one of the few"
         }
 
         ScrollableTextArea {
