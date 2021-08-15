@@ -12,11 +12,21 @@ ApplicationWindow {
     title: qsTr("Blog Creator")
 
     Material.theme: Material.Dark
+
+    Material.accent: "#5c9489" // Theresa-hellgrün
+    //Material.accent: "#3f838c" // Theresa-türkisgrün
+    //Material.accent: "#f2f163" // Theresa-gelb
+    Material.background: "#295294" // Theresa-blau
+    Material.foreground: "#f2f163" // Theresa-gelb
+    Material.primary: "#3d83be" // Therese-hellblau
+
+    /*
     Material.accent: "#a7ad6d"      // BW Hellgrün
     //Material.accent: "#616847"      // BW Helloliv
     Material.background: "#312d2a"  // BW Schwarz
     Material.foreground: "#d3c2a6"  // BW Beige
     Material.primary: "#434a39"     // BW Dunkelgrün
+    */
 
     BlogGeneratorModel {
         id: genModel
