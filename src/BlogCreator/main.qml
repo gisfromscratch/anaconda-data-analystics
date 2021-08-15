@@ -44,6 +44,7 @@ ApplicationWindow {
 
             ToolButton {
                 text: qsTr("Generate...")
+
                 onClicked: {
                     genModel.generateText(inputTextArea.getPlainText());
                 }

@@ -30,6 +30,9 @@ def answer_question():
     else:
         return "Error: No question provided. Please specify a question."
 
+    if len(question) < 7:
+        return "Error: Question is too short. Please use a longer question."
+
     if '?' != question[-1:]:
         question += '?'
 
@@ -44,6 +47,9 @@ def generate_text():
     else:
         return "Error: No prefix provided. Please specify a prefix."
 
+    if len(prefix) < 10:
+        return "Error: Prefix is too short. Please use a longer prefix."
+
     gen_result = text_generator(prefix, do_sample=True, min_length=75, max_length=175, no_repeat_ngram_size=2, early_stopping=False, top_k=50, temperature=0.7)[0]
     return gen_result['generated_text']
 
@@ -54,6 +60,9 @@ def summarize_text():
         text = request.args['text']
     else:
         return "Error: No text provided. Please specify a text."
+
+    if len(text) < 30:
+        return "Error: Text is too short. Please use a longer text."
 
     sum_result = text_summarizer(text, do_sample=True, min_length=30, max_length=130, no_repeat_ngram_size=2, early_stopping=False, top_k=50, temperature=0.7)[0]
     return sum_result['summary_text']
