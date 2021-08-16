@@ -26,7 +26,7 @@ public:
     explicit BlogGeneratorModel(QObject *parent = nullptr);
 
     Q_INVOKABLE
-    void generateText(const QString &prefix);
+    void generateText(const QString &prefix, int minTextLength=-1, int maxTextLength=-1);
 
 signals:
     void textGenerationFinished(const QString &newText);

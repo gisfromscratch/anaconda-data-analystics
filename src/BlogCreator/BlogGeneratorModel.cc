@@ -16,6 +16,7 @@
 #include "BlogGeneratorModel.h"
 
 #include <QNetworkReply>
+#include <QUrlQuery>
 
 #include "PythonEnv.h"
 
@@ -24,11 +25,23 @@ BlogGeneratorModel::BlogGeneratorModel(QObject *parent) : QObject(parent), m_acc
 
 }
 
-void BlogGeneratorModel::generateText(const QString &prefix)
+void BlogGeneratorModel::generateText(const QString &prefix, int minTextLength, int maxTextLength)
 {
-    QUrl url(QString("http://127.0.0.1:5000/generate?prefix=%1").arg(prefix));
+    QUrl url("http://127.0.0.1:5000/generate");
     QNetworkRequest textRequest(url);
-    QNetworkReply *textReply = m_accessManager->get(textRequest);
+    textRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    QUrlQuery textQuery;
+    textQuery.addQueryItem("prefix", prefix);
+    if (0 < minTextLength)
+    {
+        textQuery.addQueryItem("min", QString::number(minTextLength));
+    }
+    if (0 < maxTextLength)
+    {
+        textQuery.addQueryItem("max", QString::number(maxTextLength));
+    }
+    QByteArray payload = textQuery.query().toUtf8();
+    QNetworkReply *textReply = m_accessManager->post(textRequest, payload);
     connect(textReply, &QNetworkReply::finished, textReply, [this, textReply]()
     {
         switch (textReply->error())

@@ -40,17 +40,32 @@ def answer_question():
     return qa_result['answer']
     
 
-@app.route('/generate', methods=['GET'])
+@app.route('/generate', methods=['GET', 'POST'])
 def generate_text():
     if 'prefix' in request.args:
         prefix = request.args['prefix']
+    elif 'prefix' in request.form:
+        prefix = request.form['prefix']
     else:
         return "Error: No prefix provided. Please specify a prefix."
 
     if len(prefix) < 10:
         return "Error: Prefix is too short. Please use a longer prefix."
 
-    gen_result = text_generator(prefix, do_sample=True, min_length=75, max_length=175, no_repeat_ngram_size=2, early_stopping=False, top_k=50, temperature=0.7)[0]
+    #min_length = 75
+    #max_length = 175
+    min_length = int(0.5 * len(prefix))
+    max_length = int(2.5 * min_length)
+    if 'min' in request.args:
+        min_length = int(request.args['min'])
+    elif 'min' in request.form:
+        min_length = int(request.form['min'])
+    if 'max' in request.args:
+        max_length = int(request.args['max'])
+    elif 'max' in request.form:
+        max_length = int(request.form['max'])
+    
+    gen_result = text_generator(prefix, do_sample=True, min_length=min_length, max_length=max_length, no_repeat_ngram_size=2, early_stopping=False, top_k=50, temperature=0.9)[0]
     return gen_result['generated_text']
 
 

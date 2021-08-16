@@ -43,11 +43,36 @@ ApplicationWindow {
             anchors.fill: parent
 
             ToolButton {
-                text: qsTr("Generate...")
+                text: qsTr("Generate")
 
                 onClicked: {
-                    genModel.generateText(inputTextArea.getPlainText());
+                    if (lengthEnabledSwitch.checked) {
+                        genModel.generateText(inputTextArea.getPlainText(), minBox.value, maxBox.value);
+                    } else {
+                        genModel.generateText(inputTextArea.getPlainText());
+                    }
                 }
+            }
+
+            Switch {
+                id: lengthEnabledSwitch
+                checked: false
+            }
+
+            SpinBox {
+                id: minBox
+                from: 20
+                to: maxBox.value
+                value: 50
+                enabled: lengthEnabledSwitch.checked
+            }
+
+            SpinBox {
+                id: maxBox
+                from: minBox.value
+                to: 500
+                value: 120
+                enabled: lengthEnabledSwitch.checked
             }
         }
     }
