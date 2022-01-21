@@ -31,6 +31,11 @@ ApplicationWindow {
     BlogGeneratorModel {
         id: genModel
 
+        onRewriteTextFinished: {
+            outputTextArea.appendText(newText)
+            inputTextArea.richText = ""
+        }
+
         onTextGenerationFinished: {
             outputTextArea.appendText(newText)
             inputTextArea.richText = ""
@@ -51,6 +56,14 @@ ApplicationWindow {
                     } else {
                         genModel.generateText(inputTextArea.getPlainText());
                     }
+                }
+            }
+
+            ToolButton {
+                text: qsTr("Rewrite")
+
+                onClicked: {
+                    genModel.rewriteText(inputTextArea.getPlainText());
                 }
             }
 

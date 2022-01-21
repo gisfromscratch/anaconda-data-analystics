@@ -27,8 +27,11 @@ public:
 
     Q_INVOKABLE
     void generateText(const QString &prefix, int minTextLength=-1, int maxTextLength=-1);
+    Q_INVOKABLE
+    void rewriteText(const QString &text);
 
 signals:
+    void rewriteTextFinished(const QString &newText);
     void textGenerationFinished(const QString &newText);
 
 private:

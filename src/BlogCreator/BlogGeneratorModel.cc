@@ -74,3 +74,30 @@ void BlogGeneratorModel::generateText(const QString &prefix, int minTextLength, 
     return QString::fromStdString(message);
     */
 }
+
+void BlogGeneratorModel::rewriteText(const QString &text)
+{
+    QUrl url("http://127.0.0.1:5000/rewrite");
+    QNetworkRequest textRequest(url);
+    textRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    QUrlQuery textQuery;
+    textQuery.addQueryItem("text", text);
+    QByteArray payload = textQuery.query().toUtf8();
+    QNetworkReply *textReply = m_accessManager->post(textRequest, payload);
+    connect(textReply, &QNetworkReply::finished, textReply, [this, textReply]()
+    {
+        switch (textReply->error())
+        {
+        case QNetworkReply::NetworkError::NoError:
+            break;
+
+        default:
+            qCritical() << textReply->errorString();
+            return;
+        }
+
+        QString text = textReply->readAll();
+        emit rewriteTextFinished(text);
+    });
+
+}

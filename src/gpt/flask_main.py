@@ -2,7 +2,9 @@ import flask
 from flask import request, jsonify
 import glob
 import os
-from transformers import pipeline
+import spacy
+import torch
+from transformers import PegasusForConditionalGeneration, PegasusTokenizer, pipeline
 
 files_dir = os.environ['QA_CONTEXT_PATH']
 
@@ -14,12 +16,22 @@ for txt_file in glob.glob('{0}/*.txt'.format(files_dir)):
 app = flask.Flask('GPT-Generator')
 app.config['DEBUG'] = True
 
+'''
 qa_guide = pipeline('question-answering', model='distilbert-base-cased-distilled-squad')
 
 #text_generator = pipeline('text-generation', model='EleutherAI/gpt-neo-1.3B')
 text_generator = pipeline('text-generation', model='EleutherAI/gpt-neo-125M')
 
 text_summarizer = pipeline('summarization', model='sshleifer/distilbart-cnn-12-6')
+'''
+
+# Rewriting/Paraphrasing
+torch_device = 'cuda' if torch.cuda.is_available() else 'cpu'
+tokenizer = PegasusTokenizer.from_pretrained('tuner007/pegasus_paraphrase')
+model = PegasusForConditionalGeneration.from_pretrained('tuner007/pegasus_paraphrase').to(torch_device)
+
+# NLP model
+nlp = spacy.load('en_core_web_sm')
 
 
 
@@ -68,6 +80,28 @@ def generate_text():
     gen_result = text_generator(prefix, do_sample=True, min_length=min_length, max_length=max_length, no_repeat_ngram_size=2, early_stopping=False, top_k=50, temperature=0.9)[0]
     return gen_result['generated_text']
 
+@app.route('/rewrite', methods=['GET', 'POST'])
+def rewrite_text():
+    if 'text' in request.args:
+        text = request.args['text']
+    elif 'text' in request.form:
+        text = request.form['text']
+    else:
+        return "Error: No text provided. Please specify a text."
+
+    if len(text) < 30:
+        return "Error: Text is too short. Please use a longer text."
+
+    parsed_paragraph = nlp(text)
+    paraphrased_samples = []
+    num_beams = 10
+    max_length = 60
+    for sentence in parsed_paragraph.sents:
+        batch = tokenizer([str(sentence)], truncation=True, padding='longest', max_length=max_length, return_tensors='pt').to(torch_device)
+        translated = model.generate(**batch, max_length=max_length, num_beams=num_beams, num_return_sequences=1, temperature=1.5)
+        tgt_text = tokenizer.batch_decode(translated, skip_special_tokens=True)
+        paraphrased_samples.extend(tgt_text)
+    return ' '.join(paraphrased_samples)
 
 @app.route('/summarize', methods=['GET'])
 def summarize_text():
