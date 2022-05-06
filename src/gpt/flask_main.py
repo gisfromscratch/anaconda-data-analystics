@@ -23,8 +23,8 @@ app.config['DEBUG'] = True
 
 qa_guide = pipeline('question-answering', model='distilbert-base-cased-distilled-squad')
 
-#text_generator = pipeline('text-generation', model='EleutherAI/gpt-neo-1.3B')
-text_generator = pipeline('text-generation', model='EleutherAI/gpt-neo-125M')
+text_generator = pipeline('text-generation', model='EleutherAI/gpt-neo-1.3B')
+#text_generator = pipeline('text-generation', model='EleutherAI/gpt-neo-125M')
 
 text_summarizer = pipeline('summarization', model='sshleifer/distilbart-cnn-12-6')
 
