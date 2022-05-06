@@ -2,28 +2,32 @@ import flask
 from flask import request, jsonify
 import glob
 import os
+
+os.environ['TRANSFORMERS_CACHE'] = '/mnt/data/ml'
+
 import spacy
 import torch
 from transformers import PegasusForConditionalGeneration, PegasusTokenizer, pipeline
 
+"""
 files_dir = os.environ['QA_CONTEXT_PATH']
 
 for txt_file in glob.glob('{0}/*.txt'.format(files_dir)):
     with open(txt_file, 'r') as in_stream:
         qa_context = in_stream.read()
         qa_context += '\n'
+"""
 
 app = flask.Flask('GPT-Generator')
 app.config['DEBUG'] = True
 
-'''
 qa_guide = pipeline('question-answering', model='distilbert-base-cased-distilled-squad')
 
 #text_generator = pipeline('text-generation', model='EleutherAI/gpt-neo-1.3B')
 text_generator = pipeline('text-generation', model='EleutherAI/gpt-neo-125M')
 
 text_summarizer = pipeline('summarization', model='sshleifer/distilbart-cnn-12-6')
-'''
+
 
 # Rewriting/Paraphrasing
 torch_device = 'cuda' if torch.cuda.is_available() else 'cpu'
